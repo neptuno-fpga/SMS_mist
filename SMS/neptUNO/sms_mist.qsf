@@ -377,6 +377,7 @@ set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_RETIMING ON
 set_location_assignment PLL_1 -to pll|altpll_component|auto_generated|pll1
 set_global_assignment -name SEED 2
+set_global_assignment -name VHDL_FILE audio_i2s.vhd
 set_global_assignment -name VERILOG_FILE joydecoder_2.v
 set_global_assignment -name SYSTEMVERILOG_FILE data_io.sv
 set_global_assignment -name QIP_FILE ../../common/mc2.qip

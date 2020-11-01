@@ -547,6 +547,18 @@ dac #(16) dacr
     .dac_o(AUDIO_R)
 );
 
+//i2s audio
+audio_top i2s
+(
+	.clk_50MHz(clock_50_i),
+	.dac_MCLK (MCLK),
+	.dac_LRCK (LRCLK),
+	.dac_SCLK (SCLK),
+	.dac_SDIN (SDIN),
+	.L_data   (audioL),
+	.R_data   (audioR)
+);
+
 
 /////////////////////////  STATE SAVE/LOAD  /////////////////////////////
 // 8k auxilary RAM - 32k doesn't fit
@@ -635,75 +647,8 @@ io_ps2_keyboard keyboard
 );
 
 wire [8:0]controls_s;
-/*
-reg joy1_up_q   ; reg joy1_up_0; reg joy1_up_r;
-reg joy1_down_q ; reg joy1_down_0;reg joy1_down_r;
-reg joy1_left_q ; reg joy1_left_0; reg joy1_left_r;
-reg joy1_right_q; reg joy1_right_0; reg joy1_right_r;
-reg joy1_p6_q   ; reg joy1_p6_0; reg joy1_p6_r;
-reg joy1_p9_q   ; reg joy1_p9_0; reg joy1_p9_r;
 
-reg joy2_up_q   ; reg joy2_up_0; reg joy2_up_r;
-reg joy2_down_q ; reg joy2_down_0; reg joy2_down_r;
-reg joy2_left_q ; reg joy2_left_0; reg joy2_left_r;
-reg joy2_right_q; reg joy2_right_0; reg joy2_right_r;
-reg joy2_p6_q   ; reg joy2_p6_0; reg joy2_p6_r;
-reg joy2_p9_q   ; reg joy2_p9_0; reg joy2_p9_r;
-
-always @(posedge clk_sys) 
-   begin
-         joy1_up_0    <= joy1_up_i;
-         joy1_down_0  <= joy1_down_i;
-         joy1_left_0  <= joy1_left_i;
-         joy1_right_0 <= joy1_right_i;
-         joy1_p6_0    <= joy1_p6_i;
-         joy1_p9_0    <= joy1_p9_i;
-      
-         joy2_up_0    <= joy2_up_i;
-         joy2_down_0  <= joy2_down_i;
-         joy2_left_0  <= joy2_left_i;
-         joy2_right_0 <= joy2_right_i;
-         joy2_p6_0    <= joy2_p6_i;
-         joy2_p9_0    <= joy2_p9_i;
-   end 
-   
-always @(posedge clk_sys) 
-   begin
-         joy1_up_q    <= joy1_up_0;
-         joy1_down_q  <= joy1_down_0;
-         joy1_left_q  <= joy1_left_0;
-         joy1_right_q <= joy1_right_0;
-         joy1_p6_q    <= joy1_p6_0;
-         joy1_p9_q    <= joy1_p9_0;
-
-         joy2_up_q    <= joy2_up_0;
-         joy2_down_q  <= joy2_down_0;
-         joy2_left_q  <= joy2_left_0;
-         joy2_right_q <= joy2_right_0;
-         joy2_p6_q    <= joy2_p6_0;
-         joy2_p9_q    <= joy2_p9_0;
-     
-end
-
-always @(posedge clk_sys) 
-   begin
-         joy1_up_r    <= joy1_up_q;
-         joy1_down_r  <= joy1_down_q;
-         joy1_left_r  <= joy1_left_q;
-         joy1_right_r <= joy1_right_q;
-         joy1_p6_r    <= joy1_p6_q;
-         joy1_p9_r    <= joy1_p9_q;
-
-         joy2_up_r    <= joy2_up_q;
-         joy2_down_r  <= joy2_down_q;
-         joy2_left_r  <= joy2_left_q;
-         joy2_right_r <= joy2_right_q;
-         joy2_p6_r    <= joy2_p6_q;
-         joy2_p9_r    <= joy2_p9_q;
-     
-end
-*/
-
+// fix joystick
 wire hsync2, hsync3;
 
 always @(posedge clk_sys) 
@@ -715,10 +660,7 @@ always @(posedge clk_sys)
 begin			
 			hsync3    <= hsync2;
 end
-
-
-
-
+//
 
 //translate scancode to joystick
 kbd_joystick_sms #( .OSD_CMD ( 3'b011 )) k_joystick 

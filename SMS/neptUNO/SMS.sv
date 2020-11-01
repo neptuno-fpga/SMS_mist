@@ -121,8 +121,21 @@ assign stm_rst_o    = 1'bZ;
 assign stm_rx_o = 1'bZ;
 
 //no SRAM for this core
-assign sram_we_n_o  = 1'b1;
-assign sram_oe_n_o  = 1'b1;
+// i2s sound shared with sram_data_io [11:8]
+wire MCLK;
+wire SCLK;
+wire LRCLK;
+wire SDIN;
+assign sram_we_n_o = 1'b1;
+assign sram_ub_n_o = 1'b1;
+assign sram_lb_n_o = 1'b1;
+assign sram_addr_o = 20'b00000000000000000000;
+assign sram_data_io[15:12] = 4'hZ;
+assign sram_data_io[11:8] = {LRCLK, SDIN, SCLK, MCLK};
+assign sram_data_io[7:0] = 8'hZZ;
+assign sram_oe_n_o = 1'b1;
+assign stm_rst_o = 1'bz;
+
 
 //all the SD reading goes thru the microcontroller for this core
 assign sd_cs_n_o = 1'bZ;
@@ -596,6 +609,22 @@ dac #(16) dacr
     .dac_o(AUDIO_R)
 );
 
+//i2s audio
+audio_top i2s
+(
+	.clk_50MHz(clock_50_i),
+	.dac_MCLK (MCLK),
+	.dac_LRCK (LRCLK),
+	.dac_SCLK (SCLK),
+	.dac_SDIN (SDIN),
+	.L_data   (audioL),
+	.R_data   (audioR)
+);
+
+
+
+
+
 /////////////////////////  STATE SAVE/LOAD  /////////////////////////////
 // 8k auxilary RAM - 32k doesn't fit
 dpram #(.widthad_a(13)) nvram_inst
@@ -695,61 +724,8 @@ reg joy2_left_q ; reg joy2_left_0;
 reg joy2_right_q; reg joy2_right_0;
 reg joy2_p6_q   ; reg joy2_p6_0;
 reg joy2_p9_q   ; reg joy2_p9_0;
-/*
-always @(posedge clk_sys) 
-   begin
-         joy1_up_0    <= joy1_up_i;
-         joy1_down_0  <= joy1_down_i;
-         joy1_left_0  <= joy1_left_i;
-         joy1_right_0 <= joy1_right_i;
-         joy1_p6_0    <= joy1_p6_i;
-         joy1_p9_0    <= joy1_p9_i;
-      
-         joy2_up_0    <= joy2_up_i;
-         joy2_down_0  <= joy2_down_i;
-         joy2_left_0  <= joy2_left_i;
-         joy2_right_0 <= joy2_right_i;
-         joy2_p6_0    <= joy2_p6_i;
-         joy2_p9_0    <= joy2_p9_i;
-   end 
-   
-always @(posedge clk_sys) 
-   begin
-         joy1_up_q    <= joy1_up_0;
-         joy1_down_q  <= joy1_down_0;
-         joy1_left_q  <= joy1_left_0;
-         joy1_right_q <= joy1_right_0;
-         joy1_p6_q    <= joy1_p6_0;
-         joy1_p9_q    <= joy1_p9_0;
 
-         joy2_up_q    <= joy2_up_0;
-         joy2_down_q  <= joy2_down_0;
-         joy2_left_q  <= joy2_left_0;
-         joy2_right_q <= joy2_right_0;
-         joy2_p6_q    <= joy2_p6_0;
-         joy2_p9_q    <= joy2_p9_0;
-     
-end
-
-always @(posedge clk_sys) 
-   begin
-         joy1_up_r    <= joy1_up_q;
-         joy1_down_r  <= joy1_down_q;
-         joy1_left_r  <= joy1_left_q;
-         joy1_right_r <= joy1_right_q;
-         joy1_p6_r    <= joy1_p6_q;
-         joy1_p9_r    <= joy1_p9_q;
-
-         joy2_up_r    <= joy2_up_q;
-         joy2_down_r  <= joy2_down_q;
-         joy2_left_r  <= joy2_left_q;
-         joy2_right_r <= joy2_right_q;
-         joy2_p6_r    <= joy2_p6_q;
-         joy2_p9_r    <= joy2_p9_q;
-     
-end
-*/
-
+// fix joystick
 wire hsync2, hsync3;
 
 always @(posedge clk_sys) 
@@ -761,6 +737,7 @@ always @(posedge clk_sys)
 begin			
 			hsync3    <= hsync2;
 end		
+
 //translate scancode to joystick
 kbd_joystick_sms #( .OSD_CMD ( 3'b011 )) k_joystick 
 (
