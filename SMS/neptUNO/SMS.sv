@@ -87,7 +87,11 @@ module SMS
     output      AUDIO_R,
     input wire  ear_i,
     //output wire mic_o             = 1'b0,
-
+    // SONIDO I2S
+    output		SCLK,
+    output		LRCLK,
+    output		SDIN,	
+	
     // VGA
     output  [4:0] VGA_R,
     output  [4:0] VGA_G,
@@ -121,18 +125,11 @@ assign stm_rst_o    = 1'bZ;
 assign stm_rx_o = 1'bZ;
 
 //no SRAM for this core
-// i2s sound shared with sram_data_io [11:8]
-wire MCLK;
-wire SCLK;
-wire LRCLK;
-wire SDIN;
 assign sram_we_n_o = 1'b1;
 assign sram_ub_n_o = 1'b1;
 assign sram_lb_n_o = 1'b1;
 assign sram_addr_o = 20'b00000000000000000000;
-assign sram_data_io[15:12] = 4'hZ;
-assign sram_data_io[11:8] = {LRCLK, SDIN, SCLK, MCLK};
-assign sram_data_io[7:0] = 8'hZZ;
+assign sram_data_io  = 8'bzzzzzzzzbzzzzzzzz;
 assign sram_oe_n_o = 1'b1;
 assign stm_rst_o = 1'bz;
 
@@ -610,6 +607,7 @@ dac #(16) dacr
 );
 
 //i2s audio
+wire MCLK;
 audio_top i2s
 (
 	.clk_50MHz(clock_50_i),
